@@ -1,0 +1,289 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %> 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>SCAF - LaÃ§amentos</title>
+    </head>
+    <body>
+        <script src="<c:url value='/protected/js/parcelas.js' />" type="text/javascript"></script> 
+    
+		     
+		 <section class="content-header"> 
+		     <h1>Parcelas</h1>
+		 </section>
+		   
+		<section class="content">
+		
+			<div class="row" ng-controller="parcelaWeb">
+				
+		        
+				<div class="col-xs-12">
+					<div class="box"> 
+		                <div class="box-body table-responsive"> 
+					        <table id="lista" class="table table-bordered table-striped tabela" > 
+			                	<thead>
+									<tr> 
+										<th>Categoria</th>  
+										<th>NÂº</th> 
+										<th>Data da Parcela</th> 
+										<th>Data da Compra</th> 
+										<th>Valor</th>  
+									</tr> 
+			                	</thead> 
+		                        <tfoot>
+									<tr>  
+										<th>Categoria</th>  
+										<th>NÂº</th> 
+										<th>Data da Parcela</th> 
+										<th>Data da Compra</th> 
+										<th>Valor</th>  
+									</tr> 
+		                        </tfoot>
+							</table>  
+					        <button class="btn btn-primary"  ng-click="novo()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Novo</button>  
+		                </div>
+					</div> 
+				</div> 
+			  
+			
+				<div id="mpNovoParcelamento" class="modal fade" tabindex="-1" style="display: none;" data-backdrop="static">
+					<div class="modal-header mp-header">  
+						<i class="mp-close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+						<h4 class="modal-title"><i class="fa fa-th"></i>&nbsp;Cadastro de Parcelamento</h4>
+					</div>
+					<div class="modal-body" style="background-color: #E0F0FF"> 
+					    <form name="mpForm" novalidate > 
+			                  
+			                 <div class="box-body"> 
+		       						
+				                <div class="form-group" ng-class="displayValidationError  && mpForm.categoria.$error.required ? 'has-error' : ''">
+				                    <label>* Categoria</label> 
+				                   	<select required ng-model="parcelamento.categoria.codigo"  name="categoria" class="form-control">
+		  								<option ng-repeat="c in listCategorias" value="{{c.codigo}}">{{c.nome}}</option>
+				                   	</select> 
+				                </div> 
+				                
+				                <div class="form-group" ng-class="displayValidationError  && mpForm.nome.$error.required ? 'has-error' : ''">
+				                    <label>* Nome</label>
+				                    <input type="text" required ng-model="parcelamento.nome" name="nome" placeholder="Nome" class="form-control" >
+				                </div>  
+				                 
+				                <div class="form-group" ng-class="displayValidationError  && mpForm.dataPrimeiraParcela.$error.required ? 'has-error' : ''">
+				                    <label>* Data da primeira parcela</label>
+				                    <div class="input-group">
+		                                <div class="input-group-addon">
+		                                    <i class="fa fa-calendar"></i>
+		                                </div> 
+				                    	<input type="date" required ng-model="parcelamento.dataPrimeiraParcela" name="dataPrimeiraParcela" placeholder="Data da primeira parcela" class="form-control pull-right">
+		                            </div> 
+				                </div>   
+				                
+				                <div class="form-group" ng-class="displayValidationError  && mpForm.valor.$error.required ? 'has-error' : ''">
+				                    <label>* Valor</label>
+				                    <input mask-money prefix="'R$ '" type="text" required ng-model="valor" name="valor" placeholder="Valor" class="form-control" >
+				                </div>
+				                
+				                <div class="form-group" ng-class="displayValidationError  && mpForm.numParcelas.$error.required ? 'has-error' : ''">
+				                    <label>* NÂº de parcelas</label>
+				                    <input type="number" required ng-model="parcelamento.numParcelas" name="numParcelas" placeholder="NÂº de parcelas" class="form-control" >
+				                </div>  
+				                
+				                <div class="form-group" ng-class="displayValidationError  && mpForm.numParcelaControle.$error.required ? 'has-error' : ''">
+				                    <label>* NÂº da parcela a ser gerenciada pelo sistema</label>
+				                    <input type="number" required ng-model="parcelamento.numParcelaControle" name="numParcelaControle" placeholder="NÂº da parcela a ser gerenciada pelo sistema" class="form-control" >
+				                </div>  
+				                
+				                <div class="form-group">
+				                    <label>DescriÃ§Ã£o</label>  
+				                    <textarea ng-model="parcelamento.descricao" name="descricao" placeholder="DescriÃ§Ã£o" class="form-control" ></textarea>
+				                </div>   
+			                </div>   
+			            </form>
+					</div>
+					<div class="modal-footer" style="text-align: center;">
+		               	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;Fechar</button>
+		               	<button class="btn btn-success"  ng-click="saveOrUpdate(mpForm);"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Salvar</button>
+					</div>
+				</div>
+				 
+				        
+			
+				<div id="mpParcelamento" class="modal fade" tabindex="-1" style="display: none;" data-backdrop="static">
+					<div class="modal-header mp-header">  
+						<i class="mp-close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+						<h4 class="modal-title"><i class="fa fa-th"></i>&nbsp;Cadastro de Parcelamento</h4>
+					</div>
+					<div class="modal-body" style="background-color: #E0F0FF"> 
+					    <form name="mpParcelamentoForm" novalidate >
+					        <input type="hidden" ng-model="parcelamento.codigo" name="codigo" value="{{parcelamento.codigo}}"/> 
+			                  
+			                 <div class="box-body"> 
+		       						
+				                <div class="form-group" ng-class="displayValidationError && mpParcelamentoForm.categoria.$error.required ? 'has-error' : ''">
+				                    <label>* Categoria</label> 
+				                   	<select required ng-model="parcelamento.categoria.codigo"  name="categoria" class="form-control">
+		  								<option ng-repeat="c in listCategorias" value="{{c.codigo}}">{{c.nome}}</option>
+				                   	</select> 
+				                </div> 
+				                
+				                <div class="form-group" ng-class="displayValidationError && mpParcelamentoForm.nome.$error.required ? 'has-error' : ''">
+				                    <label>* Nome</label>
+				                    <input type="text" required ng-model="parcelamento.nome" name="nome" placeholder="Nome" class="form-control" >
+				                </div>   
+				                
+				                <div class="form-group">
+				                    <label>DescriÃ§Ã£o</label>  
+				                    <textarea ng-model="parcelamento.descricao" name="descricao" placeholder="DescriÃ§Ã£o" class="form-control" ></textarea>
+				                </div>   
+			                </div>   
+			            </form>
+					</div>
+					<div class="modal-footer" style="text-align: center;">
+		               	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;Fechar</button>
+		               	<button class="btn btn-success"  ng-click="saveOrUpdate(mpForm);"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Salvar</button>
+					</div>
+				</div>
+				
+				<div id="mpStatus" class="modal fade" tabindex="-1" style="display: none;" data-backdrop="static">
+					<div class="modal-header mp-header-warnning">
+						<i class="close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+						<h4 class="modal-title"><i class="fa fa-warning"></i>&nbsp;AlteraÃ§Ã£o de Status do Parcelamento</h4>
+					</div>
+					<div class="modal-body">
+						<p>Deseja {{parcelamento.ativo + ''== 'true' ? 'desativar' : 'ativar'}} o Parcelamento "{{parcelamento.nome}}"?</p> 
+					</div>
+					<div class="modal-footer" style="text-align: center;">
+		               	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;NÃ£o</button>
+		               	<button class="btn btn-success"  ng-click="alterStatus();"><i class="fa fa-check"></i>&nbsp;Sim</button>
+					</div>
+				</div>
+				  
+				        
+				
+				<div id="mpParcelamentoExcluir" class="modal fade" tabindex="-1" style="display: none;" data-backdrop="static">
+					<div class="modal-header mp-header-danger">
+						<i class="mp-close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+						<h4 class="modal-title"><i class="glyphicon glyphicon-warning-sign"></i>&nbsp;ConfirmaÃ§Ã£o de ExclusÃ£o de Parcelamento</h4>
+					</div>
+					<div class="modal-body">
+						<p>Deseja excluir o Parcelamento "{{parcelamento.nome}}"?</p> 
+					</div>
+					<div class="modal-footer" style="text-align: center;">
+		               	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;NÃ£o</button>
+		               	<button class="btn btn-success"  ng-click="remove();" data-dismiss="modal"><i class="fa fa-check"></i>&nbsp;Sim</button>
+					</div>
+				</div>
+				  
+				
+				
+				<div id="mpParcelas" class="modal fade container" tabindex="-1" style="display: none;" data-backdrop="static">
+					<div class="modal-header mp-header">
+						<i class="close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+						<h4 class="modal-title"><i class="fa fa-table"></i>&nbsp;Parcelas</h4>
+					</div>
+					<div class="modal-body">  
+						
+		                <div class="box-body table-responsive">  
+					        <table id="listParcelas" class="table table-bordered table-striped tabelaMini" > 
+			                	<thead>
+									<tr> 
+										<th>NÂ°</th> 
+										<th>Data</th>  
+										<th>Data de<br>  Pagamento</th> 
+										<th>Valor Previsto</th>  
+										<th>Valor Pago</th>  
+										<th>AÃ§Ãµes</th>  
+									</tr> 
+			                	</thead> 
+		                        <tfoot>
+									<tr>  
+										<th>NÂ°</th> 
+										<th>Data</th>  
+										<th>Data de<br>  Pagamento</th> 
+										<th>Valor Previsto</th>  
+										<th>Valor Pago</th>  
+										<th>AÃ§Ãµes</th>  
+									</tr> 
+		                        </tfoot>
+							</table>   
+		                </div>
+					</div>
+					<div class="modal-footer" style="text-align: center;">
+		               	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;Fechar</button> 
+					</div>
+				</div>
+				 
+				<div id="mpParcelaAlterar" class="modal fade" tabindex="-1" style="display: none;" data-backdrop="static">
+					<div class="modal-header mp-header">  
+						<i class="mp-close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i> 
+						<h4 class="modal-title"><i class="fa fa-table"></i>&nbsp;Alterar Parcela</h4>
+					</div>
+					<div class="modal-body"> 
+					    <form name="mpParcelaAlterarForm" novalidate >
+			                 <div class="box-body">   
+				                <div class="form-group">
+				                    <label>NÃºmero:&nbsp;</label>
+				                    {{parcela.numParcela}}
+				                </div>  
+				                 
+				                <div class="form-group" ng-class="mpParcelaAlterarFormErro  && mpParcelaAlterarForm.dataReferencia.$error.required ? 'has-error' : ''">
+				                    <label>* Data de ReferÃªncia:</label>
+				                    <div class="input-group">
+		                                <div class="input-group-addon">
+		                                	<i class="fa fa-calendar"></i>
+		                                </div> 
+				                    	<input type="date" required ng-model="parcela.dataReferencia" name="dataReferencia" placeholder="Data de Referencia" class="form-control pull-right" size="5">
+		                            </div> 
+				                </div>   
+				                
+				                <div class="form-group" ng-class="mpParcelaAlterarFormErro  && mpParcelaAlterarForm.parcelaValor.$error.required ? 'has-error' : ''">
+				                    <label>* Valor:</label>
+				                    <input mask-money prefix="'R$ '" required ng-model="parcela.valor" name="parcelaValor" placeholder="Valor Previsto" class="form-control" >
+				                </div>
+			                </div>   
+			            </form>
+					</div>
+					<div class="modal-footer" style="text-align: center;">
+		              	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;Fechar</button>
+		              	<button class="btn btn-success"  ng-click="saveParcela(mpParcelaAlterarForm);"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Salvar</button>
+					</div>
+				</div>
+				 
+				<div id="mpParcelaPagar" class="modal fade" tabindex="-1" style="display: none;" data-backdrop="static">
+					<div class="modal-header mp-header">  
+						<i class="mp-close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i> 
+						<h4 class="modal-title"><i class="fa fa-money" ></i>&nbsp;Registrar Pagamento de Parcela</h4>
+					</div>
+					<div class="modal-body">  
+					</div>
+					<div class="modal-footer" style="text-align: center;">
+		              	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;Fechar</button>
+		              	<button class="btn btn-success" ><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Salvar</button>
+					</div>
+				</div>
+				 
+				
+				 
+				<div id="mpServicoExcluir" class="modal fade" tabindex="-1" style="display: none;" data-backdrop="static">
+					<div class="modal-header mp-header-warnning">  
+						<i class="close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+						<h4 class="modal-title"><i class="glyphicon glyphicon-warning-sign ico-red"></i>&nbsp;ConfirmaÃ§Ã£o de ExclusÃ£o de ServiÃ§o</h4>
+					</div>
+					<div class="modal-body">
+						<p>Deseja excluir o serviÃ§o "{{servico.nome}}"?</p> 
+					</div>
+					<div class="modal-footer" style="text-align: center;">
+						<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;NÃ£o</button>
+						<button class="btn btn-success"  ng-click="removeServico();" data-dismiss="modal"><i class="fa fa-check"></i>&nbsp;Sim</button>
+					</div>
+				</div>
+				 
+				
+			</div> 
+		</section>
+     </body>
+</html>
+     

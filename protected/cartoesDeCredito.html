@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>SCAF</title>
+    </head>
+    <body>
+        <script src="/protected/js/cartoesDeCredito.js" type="text/javascript"></script> 
+		    
+		<div ng-controller="cartoesDeCreditoCtrl">
+		     
+			 <section class="content-header">
+			 	<h1>{{menu.nome}}</h1> 
+			 </section>
+			   
+			<section class="content">
+			
+				<div class="row"> 
+			        
+					<div class="col-xs-12">
+						<div class="box"> 
+			                <div class="box-body table-responsive"> 
+						        <table id="lista" class="table table-bordered table-striped tabela" > 
+				                	<thead>
+										<tr> 
+											<th>Codigo</th> 
+											<th>Bandeira</th> 
+											<th>Nome</th> 
+											<th>Número</th> 
+											<th>Data<br>  Cadastro</th>  
+											<th>Dia do<br>  Fechamento</th>  
+											<th>Dia do<br>  Vencimento</th>  
+											<th>Situação</th>  
+											<th>Ações</th>  
+										</tr> 
+				                	</thead> 
+			                        <tfoot>
+										<tr>  
+											<th>Codigo</th> 
+											<th>Bandeira</th> 
+											<th>Nome</th> 
+											<th>Número</th>  
+											<th>Data<br> Cadastro</th>  
+											<th>Dia do<br>  Fechamento</th>  
+											<th>Dia do<br>  Vencimento</th>  
+											<th>Situação</th>  
+											<th>Ações</th>     
+										</tr> 
+			                        </tfoot>
+								</table>  
+						        <button class="btn btn-primary"  ng-click="novo()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Novo</button>  
+			                </div>
+						</div>
+					</div> 
+				 
+					
+				
+					<div id="mpCartaoCredito" class="modal fade" tabindex="-1" style="display: none;" data-backdrop="static">
+						<div class="modal-header mp-header">  
+							<i class="mp-close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+							<h4 class="modal-title"><i class="fa fa-credit-card"></i>&nbsp;Cadastro de Cartão de Crédito</h4>
+						</div>
+						<div class="modal-body" style="background-color: #E0F0FF; font-size: 12px !important;"> 
+						    <form name="mpCartaoCreditoForm" novalidate >  
+				                 <div class="box-body"> 
+			     						
+					                <div class="form-group" ng-class="displayValidationError  && mpCartaoCreditoForm.bandeira.$error.required ? 'has-error' : ''">
+					                    <label>* Bandeira:</label> 
+					                   	<select ng-model="cartaoCredito.bandeira" name="bandeira" class="form-control font-12">
+					                   		<option value="MASTER">MASTER</option>
+					                   		<option value="VISA">VISA</option> 
+					                   	</select> 
+					                </div>  
+					                 
+					                <div class="form-group" ng-class="displayValidationError  && mpCartaoCreditoForm.nome.$error.required ? 'has-error' : ''">
+					                    <label>* Nome:</label>
+					                    <input type="text" required ng-model="cartaoCredito.nome" name="nome" placeholder="Nome" class="form-control" >
+					                </div>     
+					                
+					                <div class="form-group" ng-class="displayValidationError  && mpCartaoCreditoForm.numero.$error.required ? 'has-error' : ''">
+					                    <label>* Nº do Cartão:</label>
+					                    <input type="text" required ng-model="cartaoCredito.numero" name="numero" placeholder="Nº do Cartão de crédito" class="form-control" >
+					                </div>   
+					                 
+					                <div class="form-group" ng-class="displayValidationError  && mpCartaoCreditoForm.diaFechamento.$error.required ? 'has-error' : ''">
+					                    <label>* Dia do Fechamento:</label>
+					                    <input type="text" required ng-model="cartaoCredito.diaFechamento" name="diaFechamento" placeholder="diaFechamento" class="form-control" >
+					                </div>     
+					                 
+					                <div class="form-group" ng-class="displayValidationError  && mpCartaoCreditoForm.diaVencimento.$error.required ? 'has-error' : ''">
+					                    <label>* Dia do Vencimento:</label>
+					                    <input type="text" required ng-model="cartaoCredito.diaVencimento" name="diaVencimento" placeholder="diaVencimento" class="form-control" >
+					                </div>     
+				                </div>   
+				            </form>
+						</div>
+						<div class="modal-footer" style="text-align: center;">
+			               	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;Fechar</button>
+			               	<button class="btn btn-success"  ng-click="saveOrUpdate(mpCartaoCreditoForm);"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Salvar</button>
+						</div>
+					</div> 
+					        
+					
+					<div id="mpStatus" class="modal fade" tabindex="-1" style="display: none;" data-backdrop="static">
+						<div class="modal-header mp-header-warnning">
+							<i class="close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+							<h4 class="modal-title"><i class="fa fa-warning"></i>&nbsp;Alteração de Status do Cartão de Crédito</h4>
+						</div>
+						<div class="modal-body">
+							<p>Deseja {{cartaoCredito.ativo + ''== 'true' ? 'desativar' : 'ativar'}} o Cartão de Crédito "{{cartaoCredito.nome}}"?</p> 
+						</div>
+						<div class="modal-footer" style="text-align: center;">
+			               	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;Não</button>
+			               	<button class="btn btn-success"  ng-click="alterStatus();"><i class="fa fa-check"></i>&nbsp;Sim</button>
+						</div>
+					</div>
+					  
+					        
+					
+					<div id="mpCartaoCreditoExcluir" class="modal fade" tabindex="-1" style="display: none;" data-backdrop="static">
+						<div class="modal-header mp-header-danger">
+							<i class="mp-close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+							<h4 class="modal-title"><i class="glyphicon glyphicon-warning-sign"></i>&nbsp;Confirmação de Exclusão de Cartão de Crédito</h4>
+						</div>
+						<div class="modal-body">
+							<p>Deseja excluir o Cartão de Crédito "{{cartaoCredito.nome}}"?</p> 
+						</div>
+						<div class="modal-footer" style="text-align: center;">
+			               	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;Não</button>
+			               	<button class="btn btn-success"  ng-click="remove();" data-dismiss="modal"><i class="fa fa-check"></i>&nbsp;Sim</button>
+						</div>
+					</div>
+					   
+					
+				</div> 
+			</section>
+	 	</div> 
+     </body>
+</html>
+     

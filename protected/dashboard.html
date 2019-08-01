@@ -1,0 +1,488 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>SCAF - HOME</title>
+    </head>
+    <body>
+        <script src="/protected/js/dashboard.js" type="text/javascript"></script> 
+		
+		<div ng-controller="dashboardCtrl">
+		
+		<section class="content-header" style="margin-left: 10px">
+		    <h1>{{menu.nome}}</h1>
+		</section>
+		
+		<section class="content" >
+		 
+		
+		
+
+			<div class="nav-tabs-custom">
+			
+				<ul class="nav nav-tabs  ">
+					<li class="active"><a href="#tab_a" data-toggle="tab">Painel Gerencial</a></li>
+					<li><a href="#tab_b" data-toggle="tab">Agenda</a></li>
+				</ul>
+				
+				<div class="tab-content no-padding">
+					<div class="chart tab-pane active" id="tab_a"> 
+					    <div class="row">
+					        <div ng-repeat="r in listResumoMes">
+						        <div class="col-lg-2" >
+						            <div class="small-box sombreado" ng-class="getSmallboxClassResumoMes(r)" title="{{getTitleResumoMes(r)}}"> 
+						                <div class="inner"  ng-click="lancarDespesasGerais(r);">  
+						                    <h2> 
+						                        R$ {{formatInteger(r.valor)}}<sup style="font-size: 20px">,{{formatCentavos(r.valor)}}</sup>
+						                    </h2> 
+						                    <p style="font-size: 20px">{{r.descricao}}</p>
+						                </div>
+						                <div class="icon">
+						                    <i  ng-class="getSmallboxIconClassResumoMes(r)"></i>
+						                </div>
+						                <a href="#" ng-click="showModalMaisInformacoes(r)" class="small-box-footer" ng-show="r.descricao != 'Saldo'">
+						                   Mais Informações <i class="fa fa-arrow-circle-right"></i>
+						                </a>
+						                <div class="small-box-footer" ng-show="r.descricao == 'Saldo'">&nbsp;</div>
+						            </div>
+						        </div> 
+					        </div> 
+					    </div>
+					     
+					     
+					     
+					     
+						<div id="mpLancarDespesasGerais" class="modal fade"  style="display: none;" data-backdrop="static">
+							<div class="modal-header mp-header">  
+								<i class="mp-close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+								<h4 class="modal-title"><i class="fa fa-pencil-square-o"></i>&nbsp;Lançamento de Despesas Gerais</h4>
+							</div>
+							<div class="modal-body" style="background-color: #E0F0FF;"> 
+							    <form name="mpLancarDespesasGeraisForm" novalidate > 
+							    
+									<div class="row"> 
+						                     
+							                
+					                    <span class="col-lg-4 " style="font-weight: bold;">Categoria *:</span> 
+					                    <div  class="col-lg-8 "> 
+						                   	<select required autofocus ng-model="codCategoriaPai" ng-change="setSubCategorias()" name="codCategoriaPai" class="form-control ">
+				  									<option ng-repeat="c in listCategoriasPai" value="{{c.codigo}}">{{c.nome}}</option>
+						                   	</select> 
+					                    </div>
+					                    <div  class="col-lg-12  font-12">&nbsp;</div>
+							                
+					                    <span class="col-lg-4 " style="font-weight: bold;">SubCategoria *:</span> 
+					                    <div  class="col-lg-8 "> 
+						                   	<select required ng-model="lancamento.categoria.codigo"  name="categoria" class="form-control font-12" >
+				  									<option ng-repeat="c in listCategoriasFilhas" value="{{c.codigo}}">{{c.nome}}</option>
+						                   	</select> 
+					                    </div>
+					                    <div  class="col-lg-12  font-12">&nbsp;</div> 
+					                    
+					                    <span class="col-lg-4 " style="font-weight: bold;">Tags:</span> 
+					                    <div  class="col-lg-8 ">  
+						                    <div id="tags" class="form-control" onclick="$('#mpTags').modal('show');" data-toggle="modal">
+							                    <span style="color: blue; background-color: #DDD; margin-left: 5px; margin-right: 5px;" ng-repeat="t in lancamento.listTags"> 
+							                    	&nbsp;{{t.nome}}&nbsp;
+							                    </span>
+						                    </div>
+					                    </div>
+					                    <div  class="col-lg-12  font-12">&nbsp;</div> 
+					                     
+					                    
+					                    <span class="col-lg-4" style="font-weight: bold;">Data Referência *:</span>
+					                    <div class="col-lg-8 input-group">
+			                                <div class="input-group-addon">
+			                                    <i class="fa fa-calendar"></i>
+			                                </div> 
+					                    	<input type="date" required ng-model="lancamento.dataReferencia" name="dataReferencia" placeholder="Data Referencia" class="form-control pull-right">
+			                            </div>  
+					                    <div  class="col-lg-12 ">&nbsp;</div>
+			                            
+					                    <span class="col-lg-4" style="font-weight: bold;">Valor *:</span>
+					                    <input class="col-lg-8" mask-money prefix="'R$ '" type="text" required ng-model="lancamento.valor" name="valorLancamento" placeholder="Valor Lançamento" >
+					                    <div  class="col-lg-12 ">&nbsp;</div>
+			                            
+					                    <span class="col-lg-4" style="font-weight: bold;">Comentário:</span>
+					                    <textarea class="col-lg-8"  ng-model="lancamento.descricao" name="comentario" placeholder="Comentário" ></textarea> 
+					                    
+					                </div>    
+					                
+					            </form>
+							</div>
+							<div class="modal-footer" style="text-align: center;">
+				               	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;Fechar</button>
+				               	<button class="btn btn-success"  ng-click="salvarLancamentoDespesasGerais(mpLancarDespesasGeraisForm);"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Salvar</button>
+							</div>
+						</div>
+			
+			
+						
+						<div id="mpTags" class="modal" tabindex="-1" style="display: none;" data-backdrop="static">
+							<div class="modal-header mp-header">
+								<i class="close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+								<h4 class="modal-title"><i class="fa fa-calendar"></i>&nbsp;Tags</h4>
+							</div>
+							<div class="modal-body">
+									<table id="listTags"  class="table table-bordered table-striped tabelaMini"  >
+					                	<thead>
+											<tr class="headerTable">
+												<th></th> 
+												<th>Nome</th> 
+												<th>Descrição</th> 
+											</tr> 
+					                	</thead>
+						                <tbody>
+						                    <tr ng-repeat="t in listTags">
+						                        <td><input type="checkbox" ng-model="t.check" ng-change="setTag(t)"> </td>
+						                        <td>{{t.nome}}</td>  
+						                        <td>{{t.descricao}}</td>  
+						                    </tr> 
+						                </tbody>
+									</table>
+							</div>
+							<div class="modal-footer" style="text-align: center;">
+				               	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;Fechar</button>
+							</div>
+						</div> 
+						
+			
+						<div id="mpMaisInformacoes" class="modal fade in modal800" tabindex="-1" style="display: none;" data-backdrop="static">
+							<div class="modal-header mp-header">  
+								<i class="mp-close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+								<h4 class="modal-title"><i class="fa fa-bar-chart-o"></i>&nbsp;Lançamentos</h4>
+							</div>
+							<div class="modal-body">   
+								<h2>{{resumo.descricao}}</h2>
+								<br>
+					    		<div class="row"> 
+					    		
+						    		<div class="col-lg-3" ng-show="resumo.codTipo < 3">Total Previsto:</div> 
+						    		<div class="col-lg-09" style="text-align: left" ng-show="resumo.codTipo < 3">R$ {{formatDouble(resumo.valorPrevisto)}}</div> 
+						    		<div class="col-lg-3">Total Realizado:</div> 
+						    		<div class="col-lg-09" style="text-align: left">R$ {{formatDouble(resumo.valor)}}</div> 
+						    		
+						    		<div class="col-lg-12">&nbsp;</div>
+						    		 
+						    		<div class="col-lg-12"> 
+										
+								        <table id="listaMaisInformacoes" class="table table-bordered table-striped tabelaMini" > 
+						                	<thead>
+												<tr>  
+													<th>Categoria</th>  
+													<th>Tags</th>  
+													<th>
+														<span ng-show="resumo.codTipo > 2">Data de <br>Referência</span>
+														<span ng-show="resumo.codTipo < 3">Data <br>Prevista</span>
+													</th> 
+													<th>Data do<br>Lançamento</th> 
+													<th><span ng-show="resumo.codTipo < 3">Valor Previsto</span> </th>      
+													<th>Valor Realizado</th>       
+												</tr>  
+						                	</thead>  
+										</table>  
+									</div> 
+								</div> 
+							</div> 
+							<div class="modal-footer" style="text-align: center;">
+								<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;Fechar</button> 
+							</div>
+						</div>
+						
+					    <div class="row"> 
+					    
+					        <section class="col-lg-6 connectedSortable"> 
+					        
+					         
+					            <div class="box box-primary sombreado">
+					                <div class="box-header">
+					                    <i class="ion ion-clipboard"></i>
+					                    <h3 class="box-title" >Últimas Atividades</h3> 
+					                    <div class="box-tools pull-right">
+					                        <ul class="pagination pagination-sm inline" >
+					                            <li><a href="#" ng-click="nextPage(1)">&laquo;</a></li> 
+					                            <li ng-repeat="i in paginasUltimasAtividades">
+					                            	<a href="#" ng-click="nextPage(i)" style="font-size: {{i == pagina ? '19px' : '12px'}}; color: {{i == pagina ? 'blue' : 'black'}}" >{{i}}</a>
+					                            </li> 
+					                            <li><a href="#" ng-click="nextPage(paginasUltimasAtividades.length)">&raquo;</a></li>
+					                        </ul> 
+					                        <br> 
+					                    </div>
+					                </div>   
+					                <div class="box-body" style="min-height: 270px">
+					                    <ul class="todo-list">
+					                        <li ng-repeat="a in listUltimasAtividades">
+					                            <span class="handle">
+						                        	<i class="glyphicon glyphicon-check" style="color: green"></i>
+					                            </span>  
+					                                                               
+					                            <span class="text">{{formatDate(a.data)}} - {{a.descricao}} - R$ {{formatDouble(a.valor)}}</span>
+					                            <small ng-class="getClass(a)"><i class="fa fa-clock-o"></i> {{getTempo(a)}}</small>
+					                        </li>
+					                    </ul> 
+					                </div>
+					            </div> 
+					        
+					        
+					            <div class="box box-danger sombreado" id="loading-example">
+					                <div class="box-header">
+					                    <div class="pull-right box-tools">
+					                        <button class="btn btn-danger btn-sm refresh-btn" data-toggle="tooltip" title="Reload"><i class="fa fa-refresh"></i></button>
+					                        <button class="btn btn-danger btn-sm" data-widget='collapse' data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+					                        <button class="btn btn-danger btn-sm" data-widget='remove' data-toggle="tooltip" title="Remove"><i class="fa fa-times"></i></button>
+					                    </div> 
+					                    <i class="fa fa-dashboard"></i>
+					
+					                    <h3 class="box-title">Atividades do Mês</h3>
+					                </div> 
+					                
+					                <div class="box-body no-padding">
+					                    <div class="row">
+					                        <div class="col-sm-7">
+					                            <div class="chart" id="chartAtividatesMes" style="height: 250px;"></div>
+					                        </div>
+					                        <div class="col-sm-5">
+					                            <div class="pad">
+					                            
+						                            <div ng-repeat="c in listChartAtividatesMes">
+						                                <div class="clearfix">
+						                                    <span class="pull-left">{{c.descricao}}</span>
+						                                    <small class="pull-right">{{c.percentualString}}%</small>
+						                                </div>
+						                                <div class="progress xs">
+						                                    <div class="progress-bar" ng-class="getClassProgressbar(c)" style="width: {{c.percentual}}%;"></div>
+						                                </div>
+						                            </div>     
+					                            </div> 
+					                        </div> 
+					                    </div> 
+					                </div> 
+					                
+					                <div class="box-footer" >
+					                    <div class="row" id="knobAtividatesMes"></div>  
+					                </div> 
+					            </div> 
+					        
+					        
+					        
+					        
+					            
+					            <div class="box box-danger sombreado" >
+					                <div class="box-header">
+					                    <div class="pull-right box-tools">
+					                        <button class="btn btn-danger btn-sm refresh-btn" data-toggle="tooltip" title="Reload"><i class="fa fa-refresh"></i></button>
+					                        <button class="btn btn-danger btn-sm" data-widget='collapse' data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+					                        <button class="btn btn-danger btn-sm" data-widget='remove' data-toggle="tooltip" title="Remove"><i class="fa fa-times"></i></button>
+					                    </div> 
+					                    <i class="fa fa-inbox"></i>
+					                    <h3 class="box-title">Despesas e Receitas nos Últimos 12 meses</h3>
+					                </div> 
+					                
+					                <div class="box-body no-padding">
+					                    		<div class="chart" id="chartDespesasReceitas" style="position: relative; height: 300px;"></div>
+					                </div>  
+					            </div> 
+					        
+					        
+					        
+					        
+					        </section>
+					        
+					        <section class="col-lg-6 connectedSortable"> 
+					         
+					            <div class="box box-primary sombreado">
+					                <div class="box-header">
+					                    <i class="ion ion-clipboard"></i>
+					                    <h3 class="box-title">Próximas Atividades</h3>
+					                    <div class="box-tools pull-right">
+					                        <ul class="pagination pagination-sm inline">
+					                            <li><a href="#" ng-click="nextPageProximasAtividades(1)">&laquo;</a></li> 
+					                            <li ng-repeat="i in paginasProximasAtividades">
+					                            	<a href="#" ng-click="nextPageProximasAtividades(i)" style="font-size: {{i == paginaProximasAtividades ? '19px' : '12px'}}; color: {{i == paginaProximasAtividades ? 'blue' : 'black'}}" >{{i}}</a>
+					                            </li> 
+					                            <li><a href="#" ng-click="nextPageProximasAtividades(paginasProximasAtividades.length)">&raquo;</a></li>
+					                        </ul>
+					                    </div>
+					                </div> 
+					                <div class="box-body" style="min-height: 270px">
+					                    <ul class="todo-list">
+					                        <li class="linkAtividade" ng-repeat="p in listProximasAtividades" ng-click="registrarAgenda(p)" >
+					                            <span class="handle">
+						                        	<i ng-class="getIcone(p)" style="color: {{p.dias <= 0  ? 'red' : (p.dias > 0 && p.dias < 3)? 'orange' : 'green'}}"></i>
+					                            </span>  
+					                                                               
+					                            <span class="text">{{formatDate(p.dataPrevista)}} - {{p.descricao}} - R$ {{formatDouble(p.valorPrevisto)}}</span>
+					                            <small ng-class="getClassProximaAtividade(p)"><i ng-class="getIcone(p)"></i> {{p.dias > 0 ? p.dias+' dia(s)': p.dias < 0 ? p.dias+' dia(s) Atrasado' : ' hoje' }}</small>
+					                        </li> 
+					                    </ul>
+					                </div>  
+					            </div> 
+					            
+					            
+					            
+					            
+					            <div class="box box-danger sombreado" id="loading-example">
+					                <div class="box-header">
+					                    <div class="pull-right box-tools">
+					                        <button class="btn btn-danger btn-sm refresh-btn" data-toggle="tooltip" title="Reload"><i class="fa fa-refresh"></i></button>
+					                        <button class="btn btn-danger btn-sm" data-widget='collapse' data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+					                        <button class="btn btn-danger btn-sm" data-widget='remove' data-toggle="tooltip" title="Remove"><i class="fa fa-times"></i></button>
+					                    </div> 
+					                    <i class="fa fa-dashboard"></i>
+					
+					                    <h3 class="box-title">Atividades dos Últimos 3 Meses</h3>
+					                </div> 
+					                
+					                <div class="box-body no-padding">
+					                    <div class="row">
+					                        <div class="col-sm-7">
+					                            <div class="chart" id="chartAtividatesMeses" style="height: 250px;"></div>
+					                        </div>
+					                        <div class="col-sm-5">
+					                            <div class="pad">
+					                            
+						                            <div ng-repeat="c in resumoMeses.listaTotal">
+						                                <div class="clearfix">
+						                                    <span class="pull-left">{{c.descricao}}</span>
+						                                    <small class="pull-right">{{c.percentualString}}%</small>
+						                                </div>
+						                                <div class="progress xs">
+						                                    <div class="progress-bar" ng-class="getClassProgressbar(c)" style="width: {{c.percentual}}%;"></div>
+						                                </div>
+						                            </div>     
+					                            </div> 
+					                        </div> 
+					                    </div> 
+					                </div> 
+					                
+					                <div class="box-footer" >
+					                    <div class="row" id="knobAtividatesMeses"></div>  
+					                </div> 
+					            </div> 
+					            
+					        
+					            <div class="box box-danger sombreado">
+					                <div class="box-header">
+					                    <h3 class="box-title">Situação Atual</h3>
+					                </div>
+					                <div class="box-body chart-responsive">
+					                    <div class="chart" id="sales-chart2" style="height: 300px; position: relative;"></div>
+					                </div> 
+					            </div> 
+					        </section>
+					        
+					        
+					    </div>
+		    
+					</div>
+					
+					<div class="chart tab-pane" id="tab_b">
+ 
+					    <div class="row">
+					        <section class="col-lg-12 connectedSortable"> 
+					                                
+					            <div class="box box-warning sombreado">
+					                <div class="box-header">
+					                    <i class="fa fa-calendar"></i>
+					                    <div class="box-title">Agenda</div>
+					                    <div class="pull-right box-tools">
+					                        <div class="btn-group">
+					                            <button class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+					                            <ul class="dropdown-menu pull-right" role="menu">
+					                                <li><a href="#">Adicionar novo evento</a></li>
+					                                <li><a href="#">Limpar eventos</a></li> 
+					                            </ul>
+					                        </div>
+					                    </div>                                  
+					                </div> 
+					                <div class="box-body no-padding">
+					                    <div id="calendar" style="background-color: #fff"></div>
+					                </div> 
+					            </div> 
+					        
+					        </section> 
+					        
+					    </div> 
+					</div>
+				</div>
+			</div> 
+		     
+	 
+		
+			<div id="mpLancarAgenda" class="modal fade"  style="display: none;" data-backdrop="static">
+				<div class="modal-header mp-header">  
+					<i class="mp-close fa fa-times-circle" data-dismiss="modal" aria-hidden="true"></i>
+					<h4 class="modal-title"><i class="fa fa-pencil-square-o"></i>&nbsp;Lançamento Agendado</h4>
+				</div>
+				<div class="modal-body" style="background-color: #E0F0FF;"> 
+				    <form name="mpLancarAgendaForm" novalidate > 
+				    
+						<div class="row"> 
+			                     
+				                
+		                    <span class="col-lg-4 " style="font-weight: bold;">Categoria:</span> 
+		                    <div  class="col-lg-8 ">{{agenda.desCategoria}}</div>
+		                    <div  class="col-lg-12  font-12">&nbsp;</div>
+		                  
+		                    <span class="col-lg-4" style="font-weight: bold;">Data Prevista:</span>
+		                    <div  class="col-lg-8 ">{{formatDate(agenda.dataPrevista)}}</div>
+		                    <div  class="col-lg-12  font-12">&nbsp;</div>
+				                
+		                    <span class="col-lg-4" style="font-weight: bold;">Valor Previsto:</span>
+		                    <div  class="col-lg-8">R$ {{formatDouble(agenda.valorPrevisto)}}</div>
+		                    <div  class="col-lg-12  font-12">&nbsp;</div>
+		                    
+		                    
+		                    <span class="col-lg-4" style="font-weight: bold;">Data Realizada *:</span>
+		                    <div class="col-lg-8 input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div> 
+		                    	<input type="date" required ng-model="agenda.dataPagamento" name="dataPagamento" placeholder="Data Realizada" class="form-control pull-right">
+                            </div>  
+		                    <div  class="col-lg-12 ">&nbsp;</div>
+                            
+		                    <span class="col-lg-4" style="font-weight: bold;">Valor Realizado *:</span>
+		                    <input class="col-lg-8" mask-money prefix="'R$ '" type="text" required ng-model="agenda.valor" name="valor" placeholder="Valor Realizado" >
+		                    <div  class="col-lg-12 ">&nbsp;</div>
+                            
+		                    <span class="col-lg-4" style="font-weight: bold;">Comentário:</span>
+		                    <textarea class="col-lg-8"  ng-model="agenda.comentario" name="comentario" placeholder="Comentário" ></textarea> 
+		                    <div  class="col-lg-12 ">&nbsp;</div>
+		                    
+		                    <span class="col-lg-4" style="font-weight: bold;">Histórico:</span>
+			                <div class="col-lg-8" style="" ng-show="agenda.codCartaoCredito > 0 && listParcelaFatura.length > 0">
+								<table class="table table-bordered table-striped tabelaMini"  style="width: 100%; background-color: white" >
+				                	<thead>
+										<tr class="headerTable">
+											<th>Nº</th> 
+											<th>Categoria</th> 
+											<th>Data</th> 
+											<th>Valor</th> 
+										</tr> 
+				                	</thead>
+					                <tbody>
+					                    <tr ng-repeat="p in listParcelaFatura"> 
+					                        <td style="text-align: right;">{{p.lancamento.codigo}}</td>  
+					                        <td style="text-align: left;" >{{p.lancamento.categoria.nome}}</td>  
+					                        <td style="text-align: left;" >{{formatDate(p.lancamento.dataReferencia)}}</td>  
+					                        <td style="text-align: right;">{{formatDouble(p.valor)}}</td>  
+					                    </tr> 
+					                </tbody> 
+								</table>
+							</div>
+		                </div>    
+		                
+		            </form>
+				</div>
+				<div class="modal-footer" style="text-align: center;">
+	               	<button class="btn btn-danger" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i>&nbsp;Fechar</button>
+	               	<button class="btn btn-success"  ng-click="lancarAgenda(mpLancarAgendaForm);"><i class="glyphicon glyphicon-floppy-save"></i>&nbsp;Salvar</button>
+				</div>
+			</div>
+			  
+		</section> 
+		
+		</div>
+     </body>
+</html>

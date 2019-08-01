@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>SCAF - HOME</title>
+    	<style>
+    	
+    		.celula { 
+    			background-color: white;  
+    			
+    			padding: 2px 2px 2px 2px; 
+    			margin: 2px 2px 2px 2px; 
+    		} 
+    	
+    		.margem_2 {  
+    			padding: 2px 2px 2px 2px; 
+    			margin: 2px 2px 2px 2px; 
+    			box-shadow: 0 3px 9px rgba(0, 0, 0, 0.3);
+    		} 
+    		  
+    		.tree_tr{
+    			background-color: #3c8dbc;  
+    			color: white;
+    		} 
+    		  
+    		.btnCheck :hover{  
+    			background-color: #def; 
+    			cursor: pointer;
+    		} 
+    		 
+    	</style>
+	        	   
+	    <script type="text/ng-template" id="tree_node">
+			<tr tt-node is-branch="node.tipo == 'Competência' || node.tipo == 'Categoria' || node.tipo == 'SubCategoria'">
+				<td><span ng-bind="node.tipo +' - '+ node.nome"></span></td> 
+				<td><span ng-bind="node.grupo"></span></td>
+				<td><span ng-bind="node.tags"></span></td>
+				<td ng-bind="node.dataReferencia"></td>
+				<td ng-bind="node.dataLancamento"></td>
+				<td ng-bind="formatDouble(node.valorPrevisto)"></td>
+				<td ng-bind="formatDouble(node.valorPago)"></td> 
+			</tr>
+		</script>
+    </head>
+    <body>
+    
+        <script src="/protected/js/relatorioDinamico.js" type="text/javascript"></script> 
+		
+		<div ng-controller="relatorioDinamicoCtrl">
+		
+		<section class="content-header" style="margin-left: 10px;">
+		    <h1>{{menu.nome}}</h1>
+		</section>
+		
+		<section class="content" >
+		   
+	    	<div class="row">  
+	        	<section class="col-lg-4">
+					
+					<div class="box box-solid sombreado">
+						<div class="box-header">
+							<h3 class="box-title">Filtros</h3>
+						</div>
+						<div class="box-body ">
+						
+							<div class="panel box box-primary" style="margin-bottom: 0px !important;">
+								<div class="box-header" style="padding-bottom: 0px !important;">
+						            <i class="glyphicon glyphicon-th "></i>
+									<h4 class="box-title">
+										<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="collapsed">&nbsp; {{filtros[0].nome}}</a>
+									</h4>
+									<div class="box-tools pull-right"> 
+										<div class="btnCheck" ng-click="selecionarFiltro(filtros[0])"><i ng-class="getFiltroClass(filtros[0]);" style="color: #3c8dbc; font-size: 18px"></i></div>
+				                    </div> 
+								</div>
+								<div id="collapseOne" class="panel-collapse collapse" style="height: 0px;">
+									<div class="box-body">
+										 <button class="btn margem_2" ng-class="getButtonClass(btn)" ng-click="selecionar(btn)" ng-repeat="btn in grupos">{{btn.nome}}</button>
+									</div>
+								</div>
+							</div>
+							
+							<div class="panel box box-primary" style="margin-bottom: 0px !important;">
+								<div class="box-header"  style="padding-bottom: 0px !important;">
+						            <i class="glyphicon glyphicon-tags "></i>
+									<h4 class="box-title">
+										<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="collapsed">&nbsp; {{filtros[1].nome}}</a>
+									</h4>
+									<div class="box-tools pull-right"> 
+										<div class="btnCheck" ng-click="selecionarFiltro(filtros[1])"><i ng-class="getFiltroClass(filtros[1]);" style="color: #3c8dbc; font-size: 18px"></i></div>
+				                    </div> 
+								</div>
+								<div id="collapseTwo" class="panel-collapse collapse" style="height: 0px;">
+									<div class="box-body">
+										 <button class="btn margem_2" ng-class="getButtonClass(btn)" ng-click="selecionar(btn)" ng-repeat="btn in listTags">{{btn.nome}}</button>
+									</div>
+								</div>
+							</div>
+							
+							<div class="panel box box-primary" style="margin-bottom: 0px !important;">
+								<div class="box-header" style="padding-bottom: 0px !important;">
+						            <i class="glyphicon glyphicon-calendar "></i>
+									<h4 class="box-title">
+										<a data-toggle="collapse" data-parent="#accordion" href="#collapse3" class="collapsed">&nbsp; {{filtros[2].nome}}</a>
+									</h4>
+									<div class="box-tools pull-right"> 
+										<div class="btnCheck" ng-click="selecionarFiltro(filtros[2])"><i ng-class="getFiltroClass(filtros[2]);" style="color: #3c8dbc; font-size: 18px"></i></div>
+				                    </div> 
+								</div>
+								<div id="collapse3" class="panel-collapse collapse" style="height: 0px;">
+									<div class="box-body">
+	    								<button class="btn margem_2" ng-class="getButtonClass(btn)" ng-click="selecionar(btn)" ng-repeat="btn in meses">{{btn.nome}}</button>  
+									</div>
+								</div>
+							</div>
+							
+							<div class="panel box box-primary" style="margin-bottom: 0px !important;">
+								<div class="box-header" style="padding-bottom: 0px !important;">
+						            <i class="glyphicon glyphicon-share "></i>
+									<h4 class="box-title">
+										<a data-toggle="collapse" data-parent="#accordion" href="#collapse4" class="collapsed">&nbsp; {{filtros[3].nome}}</a>
+									</h4>
+									<div class="box-tools pull-right"> 
+										<div class="btnCheck" ng-click="selecionarFiltro(filtros[3])"><i ng-class="getFiltroClass(filtros[3]);" style="color: #3c8dbc; font-size: 18px"></i></div>
+				                    </div> 
+								</div>
+								<div id="collapse4" class="panel-collapse collapse" style="height: 0px;">
+									<div class="box-body">  
+				    					<div class="row" style="margin-left: 2px;">   
+				    					
+					    					<div class="col-lg-6 box box-solid" ng-repeat="c in listCategorias" style="width: 190px;">  
+								                <div class="box-header " style="border: 1px #9cf solid; padding-bottom: 0px !important;">
+								                    <h2 class="box-title" >{{c.nome}} </h2>  
+								                </div>    
+					                			<div class="box-body " style="border: 1px #9cf solid;" >  
+				    								<button class="btn margem_2" ng-class="getButtonClass(btn)" ng-click="selecionar(btn)" ng-repeat="btn in c.listSubCategorias">{{btn.nome}}</button>    
+					    						</div> 
+					    					</div>  
+					    					
+				    					</div>  
+									</div>
+								</div>
+							</div>
+							
+						</div>
+							
+					</div> 
+		            
+	        	</section>
+					    
+	        	<section class="col-lg-8" > 
+
+					<div class="nav-tabs-custom sombreado">
+						<ul class="nav nav-tabs  ">
+							<li><a href="#tab_a" data-toggle="tab">Lançamentos</a></li>
+							<li class="active"><a href="#tab_b" data-toggle="tab">Valores Agrupados</a></li>
+						</ul>
+						<div class="tab-content no-padding sombreado">
+						
+							<div class="chart tab-pane " id="tab_a"> 
+								<table tt-table tt-params="dynamic_params"  class="table  table-striped sombreado" > 
+				                	<thead>
+							            <tr class="tree_tr">
+											<th>Nome</th>  
+											<th>Grupo</th>  
+											<th>Tags</th>  
+											<th>Data Refêrencia</th> 
+											<th>Data Lançamento</th> 
+											<th>Valor Previsto</th> 
+											<th>Valor Pago</th> 
+							            </tr>
+				                	</thead>
+					                <tbody> </tbody>
+								</table>
+							</div>
+							
+							<div class="chart tab-pane active" id="tab_b">  
+							<div class="row"  style="margin-left: 10px !important">  
+							
+							 
+								<section class="col-lg-6 connectedSortable"> 
+					        	
+						            <div class="box box-primary sombreado"  style="width: 300px; margin-top: 10px !important">
+						                <div class="box-header">
+						                    <i class="glyphicon glyphicon-th "></i>
+						                    <h3 class="box-title">&nbsp; {{filtros[0].nome}}</h3>  
+						                </div>   
+						                <div class="box-body">  
+							
+											<table class="table table-bordered table-striped tabelaMini"  >
+							                	<thead>
+													<tr class="headerTable"> 
+														<th>Nome</th> 
+														<th>Valor</th> 
+													</tr> 
+							                	</thead>
+								                <tbody>
+								                    <tr ng-repeat="o in grupos"> 
+								                        <td style="text-align: left;">{{o.nome}}</td>  
+								                        <td style="text-align: right;">{{formatDouble(o.valor)}}</td>  
+								                    </tr> 
+								                </tbody>
+											</table>
+						                
+						                </div>
+						            </div>  
+						            
+					        	
+						            <div class=" box box-primary sombreado" style="width: 300px;">
+						                <div class="box-header">
+						                    <i class="glyphicon glyphicon-share "></i>
+						                    <h3 class="box-title">&nbsp; {{filtros[3].nome}}</h3>  
+						                </div>   
+						                <div class="box-body">  
+							
+											<table class="table table-bordered table-striped tabelaMini"  >
+							                	<thead>
+													<tr class="headerTable"> 
+														<th>Nome</th> 
+														<th>Valor</th> 
+													</tr> 
+							                	</thead>
+								                <tbody>
+								                    <tr ng-repeat="o in listCategorias"> 
+								                        <td style="text-align: left;">{{o.nome}}</td>  
+								                        <td style="text-align: right;">{{formatDouble(o.valor)}}</td>  
+								                    </tr> 
+								                </tbody>
+											</table> 
+						                </div>
+						            </div>  
+								</section> 
+								<section class="col-lg-6 connectedSortable"> 
+					        	 
+					        	
+						            <div class=" box box-primary sombreado" style="width: 300px; margin-top: 10px !important">
+						                <div class="box-header">
+						                    <i class="glyphicon glyphicon-tags "></i>
+						                    <h3 class="box-title">&nbsp; {{filtros[1].nome}}</h3>  
+						                </div>   
+						                <div class="box-body">  
+							
+											<table class="table table-bordered table-striped tabelaMini"  >
+							                	<thead>
+													<tr class="headerTable"> 
+														<th>Nome</th> 
+														<th>Despesa</th> 
+														<th>Receita</th> 
+													</tr> 
+							                	</thead>
+								                <tbody>
+								                    <tr ng-repeat="o in listTags"> 
+								                        <td style="text-align: left;">{{o.nome}}</td>  
+								                        <td style="text-align: right;">{{formatDouble(o.valor)}}</td>  
+								                        <td style="text-align: right;">{{formatDouble(o.valorReceita)}}</td>  
+								                    </tr> 
+								                </tbody>
+											</table>
+						                
+						                </div>
+						            </div> 
+						            
+					        	
+						            <div class=" box box-primary sombreado" style="width: 300px; ">
+						                <div class="box-header">
+						                    <i class="glyphicon glyphicon-calendar "></i>
+						                    <h3 class="box-title">&nbsp; {{filtros[2].nome}}</h3>  
+						                </div>   
+						                <div class="box-body">  
+							
+											<table class="table table-bordered table-striped tabelaMini"  >
+							                	<thead>
+													<tr class="headerTable"> 
+														<th>Nome</th> 
+														<th>Despesa</th> 
+														<th>Receita</th> 
+													</tr> 
+							                	</thead>
+								                <tbody>
+								                    <tr ng-repeat="o in meses"> 
+								                        <td style="text-align: left;">{{o.nome}}</td>  
+								                        <td style="text-align: right;">{{formatDouble(o.valor)}}</td>  
+								                        <td style="text-align: right;">{{formatDouble(o.valorReceita)}}</td>  
+								                    </tr> 
+								                </tbody>
+											</table> 
+						                </div>
+						            </div>  
+								</section>  
+									
+									
+							</div> 
+							</div> 
+						</div>
+					</div> 
+ 
+					<div id="x"></div> 
+	        	</section>
+	        </div>	 
+			  
+		</section> 
+		
+		</div>
+     </body>
+</html>

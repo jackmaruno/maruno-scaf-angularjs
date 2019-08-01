@@ -1,0 +1,65 @@
+<!DOCTYPE html> 
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+	<head> 
+		<title>desenho</title>  
+		
+		<script>   
+			function get(id){
+				return document.getElementById(id);
+			}   
+			
+			function convertImageToCanvas(id) {
+				var image = get(id);
+				var canvas = document.createElement("canvas");
+				canvas.width = image.width;
+				canvas.height = image.height;
+				canvas.getContext("2d").drawImage(image, 0, 0);
+
+				return canvas;
+			}
+			
+			function convertCanvasToImage(id) {
+				var image = new Image();
+				image.src = get(id).toDataURL("image/png");
+				return image;
+			}
+			
+			window.onload = function () { 
+				var largura = 800;
+				var altura = 500;
+
+				var quadro = get("quadro");
+				quadro.setAttribute("width", largura);
+				quadro.setAttribute("height", altura);
+
+				var ctx = quadro.getContext("2d");
+
+				var desenhando = false;
+				
+				quadro.onmousedown = function (evt) {
+					ctx.moveTo(evt.clientX, evt.clientY);
+					desenhando = true;
+				}
+				quadro.onmouseup = function () {
+					desenhando = false;                
+				}
+				quadro.onmousemove = function (evt) {
+					if (desenhando) {
+						ctx.lineTo(evt.clientX, evt.clientY);
+						ctx.stroke();
+					}
+				}
+			}
+		</script> 
+		<style>
+			#quadro{
+				cursor: crosshair;
+			}
+		</style>
+	</head> 
+    <body > 
+		<canvas id="quadro" style="background:beige"></canvas>
+		<br><div id="imagem"></div>
+		<br><button onclick="get('imagem').appendChild(convertCanvasToImage('quadro'))">Gerar Imagem</button>
+	</body> 
+</html> 

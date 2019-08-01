@@ -1,0 +1,58 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %> 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>SCAF - Tags</title>
+    </head>
+    <body>
+        <script src="<c:url value='/public/js/contato.js' />" type="text/javascript"></script> 
+		
+		<div ng-controller="contatoCtrl">
+     
+		     
+		 <section class="content-header">
+		 	<h1><span style="color: #449944">Contato</span></h1>
+		 </section>
+		   
+		<section class="content">
+		 	<span style="font-size: 18px;">Preencha o formuário</span>
+		 	<br> 
+		 	<br> 
+		
+	        <form name="form" novalidate>   
+	            
+                 <div class="box-body" style="width: 400px"> 
+	                <div class="form-group" ng-class="displayValidationError  && form.nome.$error.required ? 'has-error' : ''">
+	                    <label>* Nome:</label>
+	                    <input type="text" required ng-model="contato.nome" name="nome" placeholder="Nome" class="form-control" >
+	                </div>  
+	                
+	                <div class="form-group" ng-class="displayValidationError  && form.email.$error.required ? 'has-error' : ''">
+	                    <label>* Email:</label>
+	                    <input type="text" required ng-model="contato.email" name="email" placeholder="Email" class="form-control" >
+	                </div>  
+	                
+	                <div class="form-group" ng-class="displayValidationError  && form.assunto.$error.required ? 'has-error' : ''">
+	                    <label>* Assunto:</label>
+	                    <input type="text" required ng-model="contato.assunto" name="assunto" placeholder="Assunto" class="form-control" >
+	                </div>  
+	                
+	                <div class="form-group">
+	                    <label>Comentário:</label>  
+	                    <textarea ng-model="contato.comentario" name="comentario" placeholder="Comentário" class="form-control" ></textarea>
+	                </div>  
+                 </div> 
+	        </form>
+	        
+			<div class="modal-footer" style="text-align: center;width: 400px">
+	              	<button class="btn btn-danger"   ng-click="goMainPage()"><i class="glyphicon glyphicon-remove"></i>&nbsp;Cancelar</button>
+              	<button class="btn btn-success"  ng-click="save(form);"><i class="fa fa-check"></i>&nbsp;Enviar</button>
+			</div>
+				         
+		</section>
+		</div> 
+     </body>
+</html>
